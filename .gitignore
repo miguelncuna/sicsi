@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# SICSI - backups locais
+_sicsi_backup/
+_sicsi_legacy/
+backups/
+
+# ficheiros temporários/exportações locais
+codigo_avaliacoes.txt
+codigo_curso_id.txt
+codigo_cursos.txt

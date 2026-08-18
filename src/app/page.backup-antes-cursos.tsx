@@ -1,36 +1,8 @@
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { criarClienteSupabaseServidor } from "@/lib/supabase/server";
 
-type Curso = {
-  id: number;
-  titulo: string;
-  descricao: string;
-  nivel: string;
-};
-
-export default async function Home() {
-  const supabase = await criarClienteSupabaseServidor();
-
-  const {
-    data: cursos,
-    error: erroCursos,
-  } = await supabase
-    .from("cursos")
-    .select("id, titulo, descricao, nivel")
-    .eq("ativo", true)
-    .order("id", { ascending: true });
-
-  if (erroCursos) {
-    console.error(
-      "Erro ao carregar cursos na página inicial:",
-      erroCursos
-    );
-  }
-
-  const cursosPublicados = (cursos ?? []) as Curso[];
-
+export default function Home() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Navbar />
@@ -317,59 +289,100 @@ export default async function Home() {
             </div>
 
             <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {cursosPublicados.length === 0 ? (
-                <div className="md:col-span-2 lg:col-span-3 rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-10 text-center">
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Ainda não existem cursos disponíveis
+              {/* CURSO 1 */}
+              <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                <div className="flex h-40 items-end bg-gradient-to-br from-blue-950 to-blue-700 p-6">
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-white">
+                    Curso
+                  </span>
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Introdução à Cibersegurança
                   </h3>
 
-                  <p className="mt-2 text-sm leading-6 text-gray-500">
-                    Os cursos publicados pelo SICSI aparecerão
-                    automaticamente nesta área.
+                  <p className="mt-3 text-sm leading-6 text-gray-600">
+                    Conheça os fundamentos da segurança da informação e os
+                    principais riscos presentes no ambiente digital.
                   </p>
-                </div>
-              ) : (
-                cursosPublicados.map((curso, indice) => (
-                  <article
-                    key={curso.id}
-                    className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    <div
-                      className={`flex h-40 items-end p-6 ${
-                        indice % 3 === 0
-                          ? "bg-gradient-to-br from-blue-950 to-blue-700"
-                          : indice % 3 === 1
-                          ? "bg-gradient-to-br from-indigo-950 to-indigo-700"
-                          : "bg-gradient-to-br from-slate-950 to-slate-700"
-                      }`}
+
+                  <div className="mt-6">
+                    <Link
+                      href="/registo"
+                      className="font-semibold text-blue-800 hover:text-blue-950"
                     >
-                      <span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-white">
-                        {curso.nivel || "Curso"}
-                      </span>
-                    </div>
+                      Começar aprendizagem →
+                    </Link>
+                  </div>
+                </div>
+              </article>
 
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {curso.titulo}
-                      </h3>
+              {/* CURSO 2 */}
+              <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                <div className="flex h-40 items-end bg-gradient-to-br from-indigo-950 to-indigo-700 p-6">
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-white">
+                    Curso
+                  </span>
+                </div>
 
-                      <p className="mt-3 text-sm leading-6 text-gray-600">
-                        {curso.descricao ||
-                          "Curso de consciencialização em segurança da informação."}
-                      </p>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Protecção de Dados
+                  </h3>
 
-                      <div className="mt-6">
-                        <Link
-                          href={`/dashboard/cursos/${curso.id}`}
-                          className="font-semibold text-blue-800 transition hover:text-blue-950"
-                        >
-                          Ver curso →
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                ))
-              )}
+                  <p className="mt-3 text-sm leading-6 text-gray-600">
+                    Aprenda princípios e práticas essenciais para proteger
+                    informações pessoais e institucionais.
+                  </p>
+
+                  <div className="mt-6">
+                    <Link
+                      href="/registo"
+                      className="font-semibold text-blue-800 hover:text-blue-950"
+                    >
+                      Começar aprendizagem →
+                    </Link>
+                  </div>
+                </div>
+              </article>
+
+              {/* CURSO 3 */}
+              <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                <div className="flex h-40 items-end bg-gradient-to-br from-slate-950 to-slate-700 p-6">
+                  <span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-white">
+                    Curso
+                  </span>
+                </div>
+
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Segurança no Ambiente Digital
+                  </h3>
+
+                  <p className="mt-3 text-sm leading-6 text-gray-600">
+                    Desenvolva hábitos mais seguros na utilização de sistemas,
+                    redes, dispositivos e serviços digitais.
+                  </p>
+
+                  <div className="mt-6">
+                    <Link
+                      href="/registo"
+                      className="font-semibold text-blue-800 hover:text-blue-950"
+                    >
+                      Começar aprendizagem →
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div className="mt-8 rounded-2xl border border-blue-100 bg-blue-50 p-5">
+              <p className="text-sm leading-6 text-blue-900">
+                <strong>Nota:</strong> esta área será ligada aos cursos
+                efectivamente publicados na base de dados do SICSI, evitando
+                apresentar informação fictícia ao público.
+              </p>
             </div>
           </div>
         </section>
@@ -501,12 +514,7 @@ export default async function Home() {
                   </h3>
 
                   <p className="mt-2 text-sm leading-6 text-gray-600">
-                    <a
-                      href="mailto:contacto@sicsi.co.mz"
-                      className="font-semibold text-blue-800 transition hover:text-blue-950"
-                    >
-                      contacto@sicsi.co.mz
-                    </a>
+                    Canal de comunicação a configurar na versão final.
                   </p>
                 </div>
 
