@@ -1,570 +1,889 @@
+"use client";
+
 import Link from "next/link";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import { criarClienteSupabaseServidor } from "@/lib/supabase/server";
+import { useEffect, useState, type MouseEvent } from "react";
 
-type Curso = {
-  id: number;
-  titulo: string;
-  descricao: string;
-  nivel: string;
-};
+const cyberImages = [
+  "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1800&q=90",
+  "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1800&q=90",
+  "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?auto=format&fit=crop&w=1800&q=90",
+];
 
-export default async function Home() {
-  const supabase = await criarClienteSupabaseServidor();
+const rotatingTitles = [
+  "protege o teu mundo digital.",
+  "começa contigo.",
+  "transforma conhecimento em defesa.",
+  "torna-te mais difícil de enganar.",
+];
 
-  const {
-    data: cursos,
-    error: erroCursos,
-  } = await supabase
-    .from("cursos")
-    .select("id, titulo, descricao, nivel")
-    .eq("ativo", true)
-    .order("id", { ascending: true });
+function IconShield({ className = "size-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 48 48" fill="none">
+      <path
+        d="M24 4 41 10v11.2C41 32.2 34.2 39.7 24 44 13.8 39.7 7 32.2 7 21.2V10l17-6Z"
+        stroke="currentColor"
+        strokeWidth="2.2"
+      />
+      <path
+        d="m15.5 24 5.3 5.3L33 17"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
-  if (erroCursos) {
-    console.error(
-      "Erro ao carregar cursos na página inicial:",
-      erroCursos
+function IconArrow() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M5 12h14" />
+      <path d="m13 6 6 6-6 6" />
+    </svg>
+  );
+}
+
+function IconMenu({ open }: { open: boolean }) {
+  return open ? (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="m6 6 12 12M18 6 6 18" />
+    </svg>
+  ) : (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function IconPlay() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-3.5" fill="currentColor">
+      <path d="m8 5 11 7-11 7V5Z" />
+    </svg>
+  );
+}
+
+function IconCheck() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2.3">
+      <path d="m5 12 4 4L19 6" />
+    </svg>
+  );
+}
+
+function IconRadar() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="4" />
+      <path d="m12 12 6-6" />
+      <path d="M12 2v2M22 12h-2M12 22v-2M2 12h2" />
+    </svg>
+  );
+}
+
+function IconBook() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <path d="M4 5a2 2 0 0 1 2-2h14v17H6a2 2 0 0 0-2 2V5Z" />
+      <path d="M4 19a2 2 0 0 1 2-2h14" />
+      <path d="M8 7h8M8 10h6" />
+    </svg>
+  );
+}
+
+function IconTarget() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="5" />
+      <circle cx="12" cy="12" r="1" />
+    </svg>
+  );
+}
+
+function Logo() {
+  return (
+    <Link href="/" className="group flex items-center gap-3">
+      <div className="logo-mark">
+        <div className="logo-ring logo-ring-one" />
+        <div className="logo-ring logo-ring-two" />
+
+        <svg viewBox="0 0 48 48" className="relative z-10 size-7">
+          <path
+            d="M24 5 40 11v10.5C40 31.7 33.5 38.8 24 43 14.5 38.8 8 31.7 8 21.5V11l16-6Z"
+            fill="rgba(103,232,249,.06)"
+            stroke="currentColor"
+            strokeWidth="1.7"
+          />
+
+          <path
+            d="m15.5 24 5.2 5.2L33 17"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+
+          <path
+            d="M24 11v5"
+            stroke="currentColor"
+            strokeWidth="1.3"
+            opacity=".55"
+          />
+        </svg>
+      </div>
+
+      <div>
+        <div className="text-[15px] font-bold tracking-[.22em] text-white">
+          SICSI
+        </div>
+        <div className="hidden text-[8px] uppercase tracking-[.18em] text-white/30 sm:block">
+          Segurança da Informação
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function Spotlight({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const move = (e: MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    e.currentTarget.style.setProperty(
+      "--x",
+      `${e.clientX - rect.left}px`,
     );
-  }
 
-  const cursosPublicados = (cursos ?? []) as Curso[];
+    e.currentTarget.style.setProperty(
+      "--y",
+      `${e.clientY - rect.top}px`,
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      <Navbar />
+    <div
+      onMouseMove={move}
+      className={`premium-spotlight ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
 
-      <main>
-        {/* ============================================================
-            HERO
-        ============================================================ */}
-        <section
-          aria-labelledby="hero-titulo"
-          className="relative overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800"
-        >
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute -left-20 -top-20 h-72 w-72 rounded-full bg-white blur-3xl" />
-            <div className="absolute -bottom-32 -right-20 h-96 w-96 rounded-full bg-blue-300 blur-3xl" />
+export default function Home() {
+  const [menu, setMenu] = useState(false);
+  const [titleIndex, setTitleIndex] = useState(0);
+  const [imageIndex, setImageIndex] = useState(0);
+  const [typedTitle, setTypedTitle] = useState("");
+
+  const currentTitle = rotatingTitles[titleIndex];
+
+  useEffect(() => {
+    let position = 0;
+    let deleting = false;
+
+    const interval = setInterval(() => {
+      if (!deleting) {
+        position += 1;
+        setTypedTitle(currentTitle.slice(0, position));
+
+        if (position === currentTitle.length) {
+          deleting = true;
+        }
+      } else {
+        position -= 1;
+        setTypedTitle(currentTitle.slice(0, position));
+
+        if (position === 0) {
+          deleting = false;
+          setTitleIndex((current) => (current + 1) % rotatingTitles.length);
+        }
+      }
+    }, deleting ? 35 : 65);
+
+    return () => clearInterval(interval);
+  }, [currentTitle]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setImageIndex((current) => (current + 1) % cyberImages.length);
+    }, 7000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <main className="sicsi-home">
+
+      {/* BACKGROUND */}
+      <div className="cyber-background">
+        <div className="cyber-grid" />
+        <div className="cyber-noise" />
+        <div className="cyber-glow cyber-glow-one" />
+        <div className="cyber-glow cyber-glow-two" />
+      </div>
+
+      {/* NAVBAR */}
+      <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8">
+        <nav className="mx-auto flex h-[70px] max-w-[1420px] items-center justify-between rounded-[20px] border border-white/[.08] bg-[#06090d]/70 px-4 shadow-2xl backdrop-blur-2xl sm:px-6">
+
+          <Logo />
+
+          <div className="hidden items-center gap-8 lg:flex">
+            <a href="#sobre" className="nav-item">Sobre</a>
+            <a href="#metodo" className="nav-item">Método</a>
+            <a href="#cursos" className="nav-item">Cursos</a>
+            <a href="#simulacoes" className="nav-item">Simulações</a>
           </div>
 
-          <div className="relative mx-auto max-w-7xl px-6 py-20 sm:px-8 lg:px-12 lg:py-28">
-            <div className="max-w-4xl">
-              <span className="inline-flex items-center rounded-full border border-blue-300/30 bg-white/10 px-4 py-2 text-sm font-semibold text-blue-100 backdrop-blur-sm">
-                SICSI • Segurança da Informação
+          <div className="hidden items-center gap-2 sm:flex">
+            <Link
+              href="/login"
+              className="rounded-xl px-4 py-2.5 text-xs font-medium text-white/50 transition hover:text-white"
+            >
+              Entrar
+            </Link>
+
+            <Link
+              href="/registo"
+              className="premium-button"
+            >
+              Começar
+              <IconArrow />
+            </Link>
+          </div>
+
+          <button
+            onClick={() => setMenu(!menu)}
+            className="grid size-10 place-items-center rounded-xl border border-white/[.08] bg-white/[.03] text-white/70 sm:hidden"
+            aria-label="Menu"
+          >
+            <IconMenu open={menu} />
+          </button>
+
+          {menu && (
+            <div className="absolute left-0 right-0 top-[78px] rounded-2xl border border-white/[.08] bg-[#06090d]/95 p-4 shadow-2xl backdrop-blur-2xl sm:hidden">
+              <div className="grid gap-1">
+                <a onClick={() => setMenu(false)} href="#sobre" className="mobile-link">Sobre</a>
+                <a onClick={() => setMenu(false)} href="#metodo" className="mobile-link">Método</a>
+                <a onClick={() => setMenu(false)} href="#cursos" className="mobile-link">Cursos</a>
+                <a onClick={() => setMenu(false)} href="#simulacoes" className="mobile-link">Simulações</a>
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-white/[.07] pt-3">
+                <Link href="/login" className="mobile-button">
+                  Entrar
+                </Link>
+                <Link href="/registo" className="mobile-button mobile-button-primary">
+                  Começar
+                </Link>
+              </div>
+            </div>
+          )}
+        </nav>
+      </header>
+
+      {/* HERO */}
+      <section className="relative flex min-h-screen items-center px-5 pb-20 pt-36 sm:px-8 lg:px-10">
+
+        <div className="mx-auto grid w-full max-w-[1420px] items-center gap-16 lg:grid-cols-[1fr_.95fr]">
+
+          {/* COPY */}
+          <div className="relative z-10">
+
+            <div className="hero-status">
+              <span className="status-pulse" />
+              PLATAFORMA DE CIBERSEGURANÇA
+            </div>
+
+            <h1 className="hero-title">
+              Aprende a
+              <br />
+
+              <span className="hero-outline">
+                reconhecer.
               </span>
 
-              <h1
-                id="hero-titulo"
-                className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl"
-              >
-                Desenvolva uma cultura de{" "}
-                <span className="text-blue-200">
-                  cibersegurança
-                </span>
-              </h1>
+              <br />
 
-              <p className="mt-6 max-w-3xl text-lg leading-8 text-blue-100 sm:text-xl">
-                O SICSI é uma plataforma de consciencialização em segurança da
-                informação criada para ajudar a comunidade universitária a
-                reconhecer riscos digitais, adoptar boas práticas e tomar
-                decisões mais seguras no ambiente digital.
-              </p>
-
-              <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href="/registo"
-                  className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3.5 font-bold text-blue-900 shadow-lg transition hover:bg-blue-50"
-                >
-                  Começar agora
-                </Link>
-
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 font-bold text-white backdrop-blur-sm transition hover:bg-white/20"
-                >
-                  Iniciar sessão
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================================
-            SOBRE O SICSI
-            ÂNCORA: #sobre
-        ============================================================ */}
-        <section
-          id="sobre"
-          aria-labelledby="sobre-titulo"
-          className="scroll-mt-24 bg-white py-20"
-        >
-          <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-              <div>
-                <span className="text-sm font-bold uppercase tracking-widest text-blue-700">
-                  Sobre o SICSI
-                </span>
-
-                <h2
-                  id="sobre-titulo"
-                  className="mt-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
-                >
-                  Aprender segurança digital deve ser uma experiência prática
-                </h2>
-
-                <p className="mt-6 text-lg leading-8 text-gray-600">
-                  O SICSI foi concebido para promover a consciencialização em
-                  cibersegurança no ensino superior, combinando aprendizagem,
-                  avaliação e prática.
-                </p>
-
-                <p className="mt-4 leading-7 text-gray-600">
-                  A plataforma permitirá que os estudantes conheçam conceitos
-                  fundamentais de segurança da informação, estudem conteúdos,
-                  realizem avaliações e enfrentem situações práticas de
-                  cibersegurança.
-                </p>
-
-                <div className="mt-8">
-                  <Link
-                    href="/registo"
-                    className="inline-flex items-center rounded-xl bg-blue-800 px-5 py-3 font-semibold text-white transition hover:bg-blue-900"
-                  >
-                    Fazer parte do SICSI
-                  </Link>
-                </div>
-              </div>
-
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="rounded-2xl border border-gray-100 bg-gray-50 p-6 transition hover:-translate-y-1 hover:shadow-md">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-xl font-bold text-blue-800">
-                    01
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-bold text-gray-900">
-                    Aprender
-                  </h3>
-
-                  <p className="mt-2 leading-6 text-gray-600">
-                    Aceda a conteúdos educativos organizados por cursos e
-                    módulos.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-gray-100 bg-gray-50 p-6 transition hover:-translate-y-1 hover:shadow-md">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-xl font-bold text-blue-800">
-                    02
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-bold text-gray-900">
-                    Avaliar
-                  </h3>
-
-                  <p className="mt-2 leading-6 text-gray-600">
-                    Verifique os seus conhecimentos através de avaliações
-                    integradas na aprendizagem.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-gray-100 bg-gray-50 p-6 transition hover:-translate-y-1 hover:shadow-md">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-xl font-bold text-blue-800">
-                    03
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-bold text-gray-900">
-                    Praticar
-                  </h3>
-
-                  <p className="mt-2 leading-6 text-gray-600">
-                    Enfrente situações práticas e aprenda a tomar decisões
-                    perante riscos digitais.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-gray-100 bg-gray-50 p-6 transition hover:-translate-y-1 hover:shadow-md">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-xl font-bold text-blue-800">
-                    04
-                  </div>
-
-                  <h3 className="mt-5 text-lg font-bold text-gray-900">
-                    Progredir
-                  </h3>
-
-                  <p className="mt-2 leading-6 text-gray-600">
-                    Acompanhe a sua evolução e avance progressivamente na sua
-                    aprendizagem.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================================
-            CIBERSEGURANÇA
-        ============================================================ */}
-        <section
-          aria-labelledby="ciberseguranca-titulo"
-          className="bg-gray-50 py-20"
-        >
-          <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="text-sm font-bold uppercase tracking-widest text-blue-700">
-                Cibersegurança
+              <span className="hero-dynamic">
+                {typedTitle}
+                <span className="typing-cursor" />
               </span>
+            </h1>
 
-              <h2
-                id="ciberseguranca-titulo"
-                className="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl"
-              >
-                Pequenas decisões podem evitar grandes problemas
-              </h2>
+            <p className="hero-description">
+              O SICSI ajuda-te a compreender ameaças digitais,
+              desenvolver hábitos seguros e transformar conhecimento
+              em decisões inteligentes.
+            </p>
 
-              <p className="mt-5 text-lg leading-8 text-gray-600">
-                A segurança digital não depende apenas de tecnologia. Depende
-                também das decisões tomadas diariamente por cada utilizador.
-              </p>
-            </div>
-
-            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                <div className="text-3xl">🔐</div>
-
-                <h3 className="mt-5 text-lg font-bold text-gray-900">
-                  Credenciais
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-gray-600">
-                  Proteja palavras-passe e informações de autenticação.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                <div className="text-3xl">🎣</div>
-
-                <h3 className="mt-5 text-lg font-bold text-gray-900">
-                  Phishing
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-gray-600">
-                  Aprenda a reconhecer mensagens e páginas fraudulentas.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                <div className="text-3xl">🛡️</div>
-
-                <h3 className="mt-5 text-lg font-bold text-gray-900">
-                  Protecção de dados
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-gray-600">
-                  Desenvolva práticas responsáveis para proteger informação.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                <div className="text-3xl">🧠</div>
-
-                <h3 className="mt-5 text-lg font-bold text-gray-900">
-                  Engenharia social
-                </h3>
-
-                <p className="mt-2 text-sm leading-6 text-gray-600">
-                  Identifique técnicas utilizadas para manipular utilizadores.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================================
-            CURSOS
-            ÂNCORA: #cursos
-        ============================================================ */}
-        <section
-          id="cursos"
-          aria-labelledby="cursos-titulo"
-          className="scroll-mt-24 bg-white py-20"
-        >
-          <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-            <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-              <div>
-                <span className="text-sm font-bold uppercase tracking-widest text-blue-700">
-                  Formação
-                </span>
-
-                <h2
-                  id="cursos-titulo"
-                  className="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl"
-                >
-                  Cursos disponíveis
-                </h2>
-
-                <p className="mt-4 max-w-2xl text-lg leading-8 text-gray-600">
-                  Explore os cursos de consciencialização em segurança da
-                  informação disponíveis no SICSI.
-                </p>
-              </div>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
 
               <Link
-                href="/#cursos"
-                className="inline-flex w-fit items-center rounded-xl border border-blue-800 px-5 py-3 font-semibold text-blue-800 transition hover:bg-blue-50"
+                href="/registo"
+                className="hero-primary-button"
               >
-                Ver cursos
+                <span>Começar gratuitamente</span>
+                <span className="grid size-8 place-items-center rounded-full bg-black/10">
+                  <IconArrow />
+                </span>
               </Link>
+
+              <a
+                href="#metodo"
+                className="hero-secondary-button"
+              >
+                <span className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/[.04]">
+                  <IconPlay />
+                </span>
+                Descobrir o SICSI
+              </a>
+
             </div>
 
-            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {cursosPublicados.length === 0 ? (
-                <div className="md:col-span-2 lg:col-span-3 rounded-2xl border border-dashed border-gray-300 bg-gray-50 p-10 text-center">
-                  <h3 className="text-lg font-bold text-gray-900">
-                    Ainda não existem cursos disponíveis
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-500">
-                    Os cursos publicados pelo SICSI aparecerão
-                    automaticamente nesta área.
-                  </p>
+            <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3">
+              {[
+                "Aprendizagem gratuita",
+                "Conteúdo prático",
+                "Ambiente seguro",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[.16em] text-white/30"
+                >
+                  <span className="grid size-4 place-items-center rounded-full bg-cyan-300/10 text-cyan-300">
+                    <IconCheck />
+                  </span>
+                  {item}
                 </div>
-              ) : (
-                cursosPublicados.map((curso, indice) => (
-                  <article
-                    key={curso.id}
-                    className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    <div
-                      className={`flex h-40 items-end p-6 ${
-                        indice % 3 === 0
-                          ? "bg-gradient-to-br from-blue-950 to-blue-700"
-                          : indice % 3 === 1
-                          ? "bg-gradient-to-br from-indigo-950 to-indigo-700"
-                          : "bg-gradient-to-br from-slate-950 to-slate-700"
-                      }`}
-                    >
-                      <span className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold text-white">
-                        {curso.nivel || "Curso"}
-                      </span>
-                    </div>
+              ))}
+            </div>
+          </div>
 
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {curso.titulo}
-                      </h3>
+          {/* VISUAL */}
+          <div className="relative mx-auto w-full max-w-[650px] lg:ml-auto">
 
-                      <p className="mt-3 text-sm leading-6 text-gray-600">
-                        {curso.descricao ||
-                          "Curso de consciencialização em segurança da informação."}
-                      </p>
+            <div className="hero-image-glow" />
 
-                      <div className="mt-6">
-                        <Link
-                          href={`/dashboard/cursos/${curso.id}`}
-                          className="font-semibold text-blue-800 transition hover:text-blue-950"
-                        >
-                          Ver curso →
-                        </Link>
+            <div className="hero-visual">
+
+              {cyberImages.map((image, index) => (
+                <img
+                  key={image}
+                  src={image}
+                  alt="Cibersegurança"
+                  className={`hero-image ${
+                    imageIndex === index ? "hero-image-active" : ""
+                  }`}
+                />
+              ))}
+
+              <div className="hero-image-overlay" />
+
+              {/* HUD */}
+              <div className="absolute inset-0 z-20">
+
+                <div className="absolute left-5 top-5 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-2 text-[8px] font-semibold uppercase tracking-[.2em] text-white/60 backdrop-blur-xl">
+                  <span className="size-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,.8)]" />
+                  Sistema protegido
+                </div>
+
+                <div className="absolute right-5 top-5 rounded-full border border-white/10 bg-black/30 px-3 py-2 font-mono text-[8px] text-white/40 backdrop-blur-xl">
+                  SECURE://SICSI
+                </div>
+
+                {/* Scan line */}
+                <div className="cyber-scan-line" />
+
+                {/* Radar */}
+                <div className="absolute right-7 top-1/3 hidden size-24 rounded-full border border-cyan-300/10 md:block">
+                  <div className="absolute inset-[15%] rounded-full border border-cyan-300/10" />
+                  <div className="absolute inset-[30%] rounded-full border border-cyan-300/10" />
+                  <div className="radar-line" />
+                  <div className="absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300 shadow-[0_0_20px_5px_rgba(34,211,238,.5)]" />
+                </div>
+
+                {/* Bottom panel */}
+                <div className="absolute inset-x-5 bottom-5 rounded-2xl border border-white/10 bg-[#05070a]/75 p-4 backdrop-blur-2xl sm:p-5">
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-[8px] font-semibold uppercase tracking-[.22em] text-cyan-300/60">
+                        Estado de consciência
+                      </div>
+
+                      <div className="mt-1 text-base font-semibold text-white sm:text-lg">
+                        Defesa começa pelo conhecimento.
                       </div>
                     </div>
-                  </article>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
 
-        {/* ============================================================
-            ESTATÍSTICAS
-        ============================================================ */}
-        <section
-          aria-labelledby="estatisticas-titulo"
-          className="bg-gray-950 py-20 text-white"
-        >
-          <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-            <div className="max-w-3xl">
-              <span className="text-sm font-bold uppercase tracking-widest text-blue-300">
-                Cibersegurança na UJC
-              </span>
+                    <div className="hidden size-11 place-items-center rounded-xl border border-cyan-300/10 bg-cyan-300/[.06] text-cyan-300 sm:grid">
+                      <IconShield />
+                    </div>
+                  </div>
 
-              <h2
-                id="estatisticas-titulo"
-                className="mt-3 text-3xl font-bold sm:text-4xl"
-              >
-                Informação para compreender o desafio
-              </h2>
+                  <div className="mt-4 grid grid-cols-3 gap-2">
 
-              <p className="mt-5 text-lg leading-8 text-gray-300">
-                O SICSI terá uma área dedicada à apresentação de dados e
-                indicadores relacionados com a cibersegurança no contexto da
-                Universidade Joaquim Chissano.
-              </p>
-            </div>
+                    <div className="hud-stat">
+                      <span>RISCO</span>
+                      <strong>ANALISADO</strong>
+                    </div>
 
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm font-semibold text-gray-400">
-                  Indicador 01
-                </p>
+                    <div className="hud-stat">
+                      <span>AMEAÇA</span>
+                      <strong className="text-emerald-300!">MONITORIZADA</strong>
+                    </div>
 
-                <p className="mt-4 text-xl font-bold">
-                  Incidentes de segurança
-                </p>
+                    <div className="hud-stat">
+                      <span>DEFESA</span>
+                      <strong className="text-cyan-300!">ACTIVA</strong>
+                    </div>
 
-                <p className="mt-2 text-sm text-gray-400">
-                  Dados institucionais a integrar.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm font-semibold text-gray-400">
-                  Indicador 02
-                </p>
-
-                <p className="mt-4 text-xl font-bold">
-                  Consciencialização
-                </p>
-
-                <p className="mt-2 text-sm text-gray-400">
-                  Indicadores a apresentar com fontes verificadas.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm font-semibold text-gray-400">
-                  Indicador 03
-                </p>
-
-                <p className="mt-4 text-xl font-bold">
-                  Riscos digitais
-                </p>
-
-                <p className="mt-2 text-sm text-gray-400">
-                  Informação contextual sobre ameaças.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-sm font-semibold text-gray-400">
-                  Indicador 04
-                </p>
-
-                <p className="mt-4 text-xl font-bold">
-                  Educação em segurança
-                </p>
-
-                <p className="mt-2 text-sm text-gray-400">
-                  Dados a integrar na versão final.
-                </p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* ============================================================
-            CONTACTO
-            ÂNCORA: #contacto
-        ============================================================ */}
-        <section
-          id="contacto"
-          aria-labelledby="contacto-titulo"
-          className="scroll-mt-24 bg-white py-20"
-        >
-          <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-            <div className="grid gap-12 lg:grid-cols-2">
+            {/* Floating card */}
+            <div className="hero-floating-card hero-floating-left">
+              <div className="grid size-9 place-items-center rounded-xl bg-cyan-300/10 text-cyan-300">
+                <IconRadar />
+              </div>
               <div>
-                <span className="text-sm font-bold uppercase tracking-widest text-blue-700">
-                  Contacto
-                </span>
+                <div className="text-[8px] uppercase tracking-[.18em] text-white/25">
+                  Diagnóstico
+                </div>
+                <div className="mt-1 text-xs font-semibold text-white">
+                  Conhece o teu nível
+                </div>
+              </div>
+            </div>
 
-                <h2
-                  id="contacto-titulo"
-                  className="mt-3 text-3xl font-bold text-gray-900 sm:text-4xl"
-                >
-                  Fale com a equipa do SICSI
+            <div className="hero-floating-card hero-floating-right">
+              <div className="grid size-9 place-items-center rounded-xl bg-violet-300/10 text-violet-300">
+                <IconTarget />
+              </div>
+              <div>
+                <div className="text-[8px] uppercase tracking-[.18em] text-white/25">
+                  Simulação
+                </div>
+                <div className="mt-1 text-xs font-semibold text-white">
+                  Aprende fazendo
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* TRUST BAR */}
+      <section className="border-y border-white/[.06] bg-white/[.012] px-5 py-7 sm:px-8 lg:px-10">
+        <div className="mx-auto flex max-w-[1420px] flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="text-xs text-white/30">
+            Cibersegurança não é apenas tecnologia.
+            <span className="ml-1 text-white/60">
+              É comportamento.
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-x-8 gap-y-2 text-[8px] font-semibold uppercase tracking-[.2em] text-white/20">
+            <span>Consciência</span>
+            <span>Prevenção</span>
+            <span>Educação</span>
+            <span>Resiliência</span>
+          </div>
+        </div>
+      </section>
+
+      {/* SOBRE */}
+      <section id="sobre" className="relative px-5 py-28 sm:px-8 lg:px-10 lg:py-36">
+
+        <div className="mx-auto max-w-[1420px]">
+
+          <div className="max-w-3xl">
+            <div className="section-label">
+              <span />
+              O problema
+            </div>
+
+            <h2 className="section-title">
+              A maior vulnerabilidade
+              <br />
+              <span>continua a ser humana.</span>
+            </h2>
+
+            <p className="section-description">
+              Ferramentas protegem sistemas. Conhecimento protege pessoas.
+              O SICSI foi concebido para aproximar a cibersegurança da vida
+              digital quotidiana dos estudantes.
+            </p>
+          </div>
+
+          <div className="mt-16 grid gap-4 md:grid-cols-3">
+
+            <Spotlight className="feature-card">
+              <span className="feature-number">01</span>
+              <div className="feature-icon">
+                <IconRadar />
+              </div>
+              <div className="mt-auto">
+                <div className="feature-label">DIAGNÓSTICO</div>
+                <h3>Descobre onde estás.</h3>
+                <p>
+                  Avalia o teu conhecimento e identifica as áreas que precisam
+                  de maior atenção.
+                </p>
+              </div>
+            </Spotlight>
+
+            <Spotlight className="feature-card">
+              <span className="feature-number">02</span>
+              <div className="feature-icon">
+                <IconBook />
+              </div>
+              <div className="mt-auto">
+                <div className="feature-label">APRENDIZAGEM</div>
+                <h3>Aprende o que importa.</h3>
+                <p>
+                  Conteúdo claro, estruturado e orientado para situações reais.
+                </p>
+              </div>
+            </Spotlight>
+
+            <Spotlight className="feature-card">
+              <span className="feature-number">03</span>
+              <div className="feature-icon">
+                <IconTarget />
+              </div>
+              <div className="mt-auto">
+                <div className="feature-label">SIMULAÇÃO</div>
+                <h3>Pratica antes de arriscar.</h3>
+                <p>
+                  Aprende a reconhecer ameaças através de experiências
+                  interactivas e cenários simulados.
+                </p>
+              </div>
+            </Spotlight>
+
+          </div>
+        </div>
+      </section>
+
+      {/* MÉTODO */}
+      <section id="metodo" className="border-y border-white/[.06] bg-[#07090c] px-5 py-28 sm:px-8 lg:px-10 lg:py-36">
+
+        <div className="mx-auto max-w-[1420px]">
+
+          <div className="grid gap-16 lg:grid-cols-[.75fr_1.25fr]">
+
+            <div>
+              <div className="section-label">
+                <span />
+                Como funciona
+              </div>
+
+              <h2 className="section-title">
+                Uma jornada.
+                <br />
+                <span>Quatro movimentos.</span>
+              </h2>
+            </div>
+
+            <div className="relative">
+
+              <div className="absolute left-[19px] top-6 bottom-6 w-px bg-gradient-to-b from-cyan-300/40 via-white/10 to-transparent" />
+
+              {[
+                ["01", "Avaliar", "Descobre o teu nível através do diagnóstico inicial.", IconRadar],
+                ["02", "Aprender", "Constrói conhecimento através dos cursos.", IconBook],
+                ["03", "Simular", "Testa as tuas decisões em cenários digitais.", IconTarget],
+                ["04", "Evoluir", "Acompanha o progresso e continua a melhorar.", IconShield],
+              ].map(([number, title, description, Icon]) => (
+                <div key={number as string} className="method-row group">
+
+                  <div className="method-node">
+                    <Icon />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-[9px] text-white/20">
+                        {number as string}
+                      </span>
+                      <h3>{title as string}</h3>
+                    </div>
+
+                    <p>{description as string}</p>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CYBER EXPERIENCE */}
+      <section id="simulacoes" className="px-5 py-28 sm:px-8 lg:px-10 lg:py-36">
+
+        <div className="mx-auto max-w-[1420px]">
+
+          <div className="relative min-h-[600px] overflow-hidden rounded-[32px] border border-white/[.08]">
+
+            <img
+              src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=2000&q=90"
+              alt="Segurança digital"
+              className="absolute inset-0 h-full w-full object-cover opacity-30"
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-r from-[#05070a] via-[#05070a]/90 to-[#05070a]/30" />
+
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,rgba(34,211,238,.13),transparent_32%)]" />
+
+            <div className="relative flex min-h-[600px] items-center p-8 sm:p-12 lg:p-20">
+
+              <div className="max-w-2xl">
+
+                <div className="section-label">
+                  <span />
+                  Experiência prática
+                </div>
+
+                <h2 className="mt-6 text-4xl font-semibold leading-[.95] tracking-[-.05em] sm:text-6xl">
+                  Não esperes
+                  <br />
+                  pelo ataque.
+                  <br />
+                  <span className="text-cyan-300">
+                    Aprende antes dele.
+                  </span>
                 </h2>
 
-                <p className="mt-5 max-w-xl text-lg leading-8 text-gray-600">
-                  Tem alguma questão, sugestão ou pretende saber mais sobre a
-                  plataforma? Entre em contacto connosco.
+                <p className="mt-7 max-w-xl text-base leading-7 text-white/40">
+                  Reconhece phishing, engenharia social, comportamentos
+                  inseguros e outras ameaças através de experiências que
+                  aproximam a aprendizagem da realidade.
                 </p>
-              </div>
 
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl">
-                    ✉️
-                  </div>
-
-                  <h3 className="mt-5 font-bold text-gray-900">
-                    Correio electrónico
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    <a
-                      href="mailto:contacto@sicsi.co.mz"
-                      className="font-semibold text-blue-800 transition hover:text-blue-950"
-                    >
-                      contacto@sicsi.co.mz
-                    </a>
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 text-xl">
-                    🎓
-                  </div>
-
-                  <h3 className="mt-5 font-bold text-gray-900">
-                    Universidade
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    Universidade Joaquim Chissano
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============================================================
-            CALL TO ACTION FINAL
-        ============================================================ */}
-        <section className="bg-white pb-20">
-          <div className="mx-auto max-w-5xl px-6 sm:px-8">
-            <div className="rounded-3xl bg-gradient-to-br from-blue-900 to-blue-800 px-6 py-12 text-center shadow-xl sm:px-12">
-              <h2 className="text-3xl font-bold text-white sm:text-4xl">
-                Está preparado para aprender mais sobre cibersegurança?
-              </h2>
-
-              <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-blue-100">
-                Crie a sua conta no SICSI e tenha acesso à experiência de
-                aprendizagem, avaliações, simulações e acompanhamento do seu
-                progresso.
-              </p>
-
-              <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
                 <Link
                   href="/registo"
-                  className="inline-flex items-center justify-center rounded-xl bg-white px-6 py-3.5 font-bold text-blue-900 transition hover:bg-blue-50"
+                  className="premium-button mt-9"
                 >
-                  Criar conta
+                  Explorar plataforma
+                  <IconArrow />
                 </Link>
 
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center rounded-xl border border-white/30 px-6 py-3.5 font-bold text-white transition hover:bg-white/10"
-                >
-                  Já tenho uma conta
-                </Link>
+              </div>
+
+              {/* security visualization */}
+              <div className="absolute right-[8%] top-1/2 hidden -translate-y-1/2 lg:block">
+
+                <div className="security-core">
+
+                  <div className="security-orbit orbit-one" />
+                  <div className="security-orbit orbit-two" />
+                  <div className="security-orbit orbit-three" />
+
+                  <div className="security-center">
+                    <IconShield className="size-12 text-cyan-300" />
+                  </div>
+
+                  <div className="security-node node-one" />
+                  <div className="security-node node-two" />
+                  <div className="security-node node-three" />
+
+                </div>
+
               </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
-      <Footer />
-    </div>
+      {/* CURSOS */}
+      <section id="cursos" className="px-5 py-28 sm:px-8 lg:px-10 lg:py-36">
+
+        <div className="mx-auto max-w-[1420px]">
+
+          <div className="flex flex-col justify-between gap-7 md:flex-row md:items-end">
+
+            <div>
+              <div className="section-label">
+                <span />
+                Aprendizagem
+              </div>
+
+              <h2 className="section-title">
+                Conhecimento que
+                <br />
+                <span>fica contigo.</span>
+              </h2>
+            </div>
+
+            <Link
+              href="/registo"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-white/40 transition hover:text-cyan-300"
+            >
+              Ver todos os cursos
+              <IconArrow />
+            </Link>
+
+          </div>
+
+          <div className="mt-14 grid gap-4 lg:grid-cols-3">
+
+            {[
+              {
+                title: "Introdução à Cibersegurança",
+                level: "BÁSICO",
+                image: cyberImages[0],
+              },
+              {
+                title: "Criptologia",
+                level: "INTERMÉDIO",
+                image: cyberImages[1],
+              },
+              {
+                title: "Phishing e Engenharia Social",
+                level: "INTERMÉDIO",
+                image: cyberImages[2],
+              },
+            ].map((course, index) => (
+              <Link
+                href="/registo"
+                key={course.title}
+                className="course-card"
+              >
+
+                <img
+                  src={course.image}
+                  alt={course.title}
+                  className="course-image"
+                />
+
+                <div className="course-overlay" />
+
+                <div className="relative z-10 flex h-full flex-col justify-between p-6">
+
+                  <div className="flex justify-between">
+                    <span className="course-level">
+                      {course.level}
+                    </span>
+
+                    <span className="course-arrow">
+                      <IconArrow />
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="font-mono text-[9px] text-white/25">
+                      0{index + 1} / SICSI
+                    </span>
+
+                    <h3 className="mt-3 text-2xl font-semibold leading-tight tracking-[-.03em]">
+                      {course.title}
+                    </h3>
+
+                    <div className="mt-5 border-t border-white/10 pt-4 text-[9px] uppercase tracking-[.16em] text-white/30">
+                      Explorar curso
+                    </div>
+                  </div>
+
+                </div>
+              </Link>
+            ))}
+
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-5 py-28 sm:px-8 lg:px-10 lg:py-40">
+
+        <div className="mx-auto max-w-[1420px]">
+
+          <div className="cta-panel">
+
+            <div className="cta-glow" />
+
+            <div className="relative z-10 mx-auto max-w-4xl text-center">
+
+              <div className="mx-auto grid size-14 place-items-center rounded-2xl border border-cyan-300/15 bg-cyan-300/[.06] text-cyan-300">
+                <IconShield className="size-7" />
+              </div>
+
+              <div className="section-label justify-center mt-7">
+                <span />
+                SICSI
+                <span />
+              </div>
+
+              <h2 className="mt-6 text-5xl font-semibold tracking-[-.055em] sm:text-7xl">
+                O teu próximo clique
+                <br />
+                <span className="text-cyan-300">
+                  pode ser mais seguro.
+                </span>
+              </h2>
+
+              <p className="mx-auto mt-7 max-w-xl text-base leading-7 text-white/35">
+                Começa gratuitamente e transforma a forma como te relacionas
+                com o mundo digital.
+              </p>
+
+              <Link
+                href="/registo"
+                className="hero-primary-button mx-auto mt-9"
+              >
+                Criar a minha conta
+                <span className="grid size-8 place-items-center rounded-full bg-black/10">
+                  <IconArrow />
+                </span>
+              </Link>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-white/[.06] px-5 py-10 sm:px-8 lg:px-10">
+
+        <div className="mx-auto flex max-w-[1420px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
+
+          <div>
+            <Logo />
+
+            <p className="mt-4 max-w-sm text-[11px] leading-5 text-white/25">
+              Sistema de Consciencialização em Segurança da Informação.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-7 text-[9px] uppercase tracking-[.17em] text-white/25">
+            <Link href="/login">Entrar</Link>
+            <Link href="/registo">Registar</Link>
+            <a href="#sobre">Sobre</a>
+            <a href="#cursos">Cursos</a>
+          </div>
+
+          <div className="text-[9px] uppercase tracking-[.15em] text-white/15">
+            © {new Date().getFullYear()} SICSI
+          </div>
+
+        </div>
+      </footer>
+
+    </main>
   );
 }
