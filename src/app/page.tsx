@@ -945,9 +945,9 @@ export default function Home() {
 
           <div className="footer-credit-wrap">
             <p className="footer-credit">
-              DESENVOLVIDO COM MUITA HUMILDADE E APREÇO AS TECNOLOGIAS EMERGENTES
+              DESENVOLVIDO COM MUITA HUMILDADE E APREÇO AS TECNOLOGIAS EMERGENTES POR
               <span className="footer-credit-author">
-                POR, MIGUEL JACINTO NCUNA - KIUBY
+              MIGUEL JACINTO NCUNA - KIUBY
               </span>
 
               <span
