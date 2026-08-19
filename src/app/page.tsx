@@ -10,10 +10,10 @@ const cyberImages = [
 ];
 
 const rotatingTitles = [
-  "protege o teu mundo digital.",
+  "protege o seu mundo digital.",
   "começa contigo.",
   "transforma conhecimento em defesa.",
-  "torna-te mais difícil de enganar.",
+  "torna-se mais difícil de enganar.",
 ];
 
 /* Velocidade refinada: ligeiramente mais rápida, mas confortável para leitura. */
@@ -402,7 +402,7 @@ export default function Home() {
             </h1>
 
             <p className="hero-description">
-              O SICSI ajuda-te a compreender ameaças digitais,
+              O SICSI ajuda a compreender ameaças digitais,
               desenvolver hábitos seguros e transformar conhecimento
               em decisões inteligentes.
             </p>
@@ -470,10 +470,6 @@ export default function Home() {
                   Sistema protegido
                 </div>
 
-                <div className="absolute right-5 top-5 rounded-full border border-white/10 bg-black/30 px-3 py-2 font-mono text-[8px] text-white/40 backdrop-blur-xl">
-                  SECURE://SICSI
-                </div>
-
                 <div className="cyber-scan-line" />
 
                 <div className="absolute right-7 top-1/3 hidden size-24 rounded-full border border-cyan-300/10 md:block">
@@ -484,7 +480,7 @@ export default function Home() {
                   <div className="absolute left-1/2 top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-300 shadow-[0_0_20px_5px_rgba(34,211,238,.5)]" />
                 </div>
 
-                <div className="absolute inset-x-5 bottom-5 rounded-2xl border border-white/10 bg-[#05070a]/75 p-4 backdrop-blur-2xl sm:p-5">
+                <div className="hero-state-card absolute inset-x-5 bottom-5 rounded-2xl border border-white/10 bg-[#05070a]/75 p-4 backdrop-blur-2xl sm:p-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-[8px] font-semibold uppercase tracking-[.22em] text-cyan-300/60">
@@ -536,7 +532,7 @@ export default function Home() {
                 </div>
 
                 <div className="mt-1 text-xs font-semibold text-white">
-                  Conhece o teu nível
+                  Conheça o seu nível
                 </div>
               </div>
             </div>
@@ -552,7 +548,7 @@ export default function Home() {
                 </div>
 
                 <div className="mt-1 text-xs font-semibold text-white">
-                  Aprende fazendo
+                  Aprenda fazendo
                 </div>
               </div>
             </div>
@@ -613,12 +609,12 @@ export default function Home() {
               </div>
 
               <div className="mt-auto">
-                <div className="feature-label">DIAGNÓSTICO</div>
+                <div className="feature-label">DIAGNÃ“STICO</div>
 
-                <h3>Descobre onde estás.</h3>
+                <h3>Descubra onde está.</h3>
 
                 <p>
-                  Avalia o teu conhecimento e identifica as áreas
+                  Avalie o seu conhecimento e identifique as áreas
                   que precisam de maior atenção.
                 </p>
               </div>
@@ -634,7 +630,7 @@ export default function Home() {
               <div className="mt-auto">
                 <div className="feature-label">APRENDIZAGEM</div>
 
-                <h3>Aprende o que importa.</h3>
+                <h3>Aprenda o que importa.</h3>
 
                 <p>
                   Conteúdo claro, estruturado e orientado
@@ -656,7 +652,7 @@ export default function Home() {
                 <h3>Pratica antes de arriscar.</h3>
 
                 <p>
-                  Aprende a reconhecer ameaças através de experiências
+                  Aprenda a reconhecer ameaças através de experiências
                   interactivas e cenários simulados.
                 </p>
               </div>
@@ -689,10 +685,10 @@ export default function Home() {
               <div className="absolute left-[19px] top-6 bottom-6 w-px bg-gradient-to-b from-cyan-300/40 via-white/10 to-transparent" />
 
               {[
-                ["01", "Avaliar", "Descobre o teu nível através do diagnóstico inicial.", IconRadar],
+                ["01", "Avaliar", "Descubra o seu nível através do diagnóstico inicial.", IconRadar],
                 ["02", "Aprender", "Constrói conhecimento através dos cursos.", IconBook],
-                ["03", "Simular", "Testa as tuas decisões em cenários digitais.", IconTarget],
-                ["04", "Evoluir", "Acompanha o progresso e continua a melhorar.", IconShield],
+                ["03", "Simular", "Teste as tuas decisões em cenários digitais.", IconTarget],
+                ["04", "Evoluir", "Acompanhe o progresso e continua a melhorar.", IconShield],
               ].map(([number, title, description, Icon]) => {
                 const StepIcon = Icon as () => React.ReactNode;
 
@@ -721,7 +717,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SIMULAÇÕES */}
+      {/* SIMULAÇÃ•ES */}
       <section
         id="simulacoes"
         className="px-5 py-28 sm:px-8 lg:px-10 lg:py-36"
@@ -746,12 +742,12 @@ export default function Home() {
                 </div>
 
                 <h2 className="mt-6 text-4xl font-semibold leading-[.95] tracking-[-.05em] sm:text-6xl">
-                  Não esperes
+                  Não espere
                   <br />
                   pelo ataque.
                   <br />
                   <span className="text-cyan-300">
-                    Aprende antes dele.
+                    Aprenda antes dele.
                   </span>
                 </h2>
 
@@ -819,8 +815,8 @@ export default function Home() {
           <div className="mt-14 grid gap-4 lg:grid-cols-3">
             {[
               {
-                title: "Introdução à Cibersegurança",
-                level: "BÁSICO",
+                title: "Introdução Ã  Cibersegurança",
+                level: "BÃSICO",
                 image: cyberImages[0],
               },
               {
@@ -896,7 +892,7 @@ export default function Home() {
               </div>
 
               <h2 className="mt-6 text-5xl font-semibold tracking-[-.055em] sm:text-7xl">
-                O teu próximo clique
+                O seu próximo clique
                 <br />
                 <span className="text-cyan-300">
                   pode ser mais seguro.
@@ -904,7 +900,7 @@ export default function Home() {
               </h2>
 
               <p className="mx-auto mt-7 max-w-xl text-base leading-7 text-white/35">
-                Começa gratuitamente e transforma a forma como te relacionas
+                Comece gratuitamente e transforme a forma como se relaciona
                 com o mundo digital.
               </p>
 
@@ -949,9 +945,9 @@ export default function Home() {
 
           <div className="footer-credit-wrap">
             <p className="footer-credit">
-              DESENVOLVIDO COM MUITA HUMILDADE E APREÇO AS TIC&apos;S
+              DESENVOLVIDO COM MUITA HUMILDADE E APREÇO AS TECNOLOGIAS EMERGENTES
               <span className="footer-credit-author">
-                POR MIGUEL JACINTO NCUNA - KIUBY
+                POR, MIGUEL JACINTO NCUNA - KIUBY
               </span>
 
               <span

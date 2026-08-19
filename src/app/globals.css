@@ -1093,21 +1093,261 @@ img {
 }
 
 /* =========================================================
+   SECURITY LOADER
+   ========================================================= */
+
+.security-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: #030507;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.45s ease;
+}
+
+.security-loader-leaving {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.security-loader-background {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(34, 211, 238, 0.08),
+      transparent 22rem
+    ),
+    radial-gradient(
+      circle at 50% 110%,
+      rgba(124, 58, 237, 0.05),
+      transparent 30rem
+    ),
+    #030507;
+}
+
+.security-loader-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.8) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.8) 1px,
+      transparent 1px
+    );
+  background-size: 64px 64px;
+  mask-image: radial-gradient(
+    circle at center,
+    black,
+    transparent 80%
+  );
+}
+
+.security-loader-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: loader-content-in 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes loader-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.security-loader-logo {
+  position: relative;
+  display: grid;
+  width: 105px;
+  height: 105px;
+  place-items: center;
+  border: 1px solid rgba(103, 232, 249, 0.16);
+  border-radius: 999px;
+  background:
+    radial-gradient(
+      circle,
+      rgba(103, 232, 249, 0.08),
+      transparent 68%
+    );
+  box-shadow:
+    0 0 70px rgba(34, 211, 238, 0.08),
+    inset 0 0 50px rgba(34, 211, 238, 0.04);
+}
+
+.security-loader-orbit {
+  position: absolute;
+  border: 1px solid rgba(103, 232, 249, 0.13);
+  border-radius: 999px;
+}
+
+.security-loader-orbit-one {
+  inset: -15px;
+  border-style: dashed;
+  animation: loader-orbit-one 8s linear infinite;
+}
+
+.security-loader-orbit-two {
+  inset: -28px;
+  opacity: 0.55;
+  animation: loader-orbit-two 12s linear infinite;
+}
+
+.security-loader-orbit-three {
+  inset: -42px;
+  opacity: 0.25;
+  border-style: dashed;
+  animation: loader-orbit-one 18s linear infinite reverse;
+}
+
+@keyframes loader-orbit-one {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-orbit-two {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.security-loader-scan {
+  position: absolute;
+  z-index: 30;
+  left: 50%;
+  top: 50%;
+  width: 1px;
+  height: 50%;
+  transform-origin: bottom;
+  background: linear-gradient(
+    to top,
+    rgba(103, 232, 249, 0.8),
+    transparent
+  );
+  animation: loader-radar 3s linear infinite;
+}
+
+@keyframes loader-radar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.security-loader-brand {
+  margin-top: 28px;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+}
+
+.security-loader-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.security-loader-status span {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #67e8f9;
+  box-shadow: 0 0 10px rgba(103, 232, 249, 0.8);
+  animation: loader-status-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes loader-status-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.security-loader-progress {
+  position: relative;
+  width: 150px;
+  height: 1px;
+  margin-top: 25px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.security-loader-progress div {
+  position: absolute;
+  inset: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #67e8f9,
+    transparent
+  );
+  animation: loader-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes loader-progress {
+  from {
+    transform: translateX(-140%);
+  }
+
+  to {
+    transform: translateX(320%);
+  }
+}
+
+.security-loader-code {
+  margin-top: 12px;
+  color: rgba(103, 232, 249, 0.18);
+  font-family: monospace;
+  font-size: 7px;
+  letter-spacing: 0.18em;
+}
+
+/* =========================================================
    TABLET
    ========================================================= */
 
 @media (min-width: 768px) and (max-width: 1024px) {
-  /*
-   * TABLET:
-   * A caixa volta deliberadamente para a esquerda.
-   * O espaçamento vertical permanece proporcional ao título.
-   */
   .hero-status {
-    display: inline-flex;
+    display: flex;
     width: fit-content;
-    margin-right: 0;
-    margin-left: 0;
-    justify-content: flex-start;
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .hero-title {
@@ -1161,6 +1401,85 @@ img {
 }
 
 /* =========================================================
+   LAPTOPS — CONTENÇÃO DOS CARTÕES FLUTUANTES
+   Evita que os elementos HUD invadam outras caixas
+   em resoluções de laptop, preservando o efeito premium.
+   ========================================================= */
+
+@media (min-width: 1025px) and (max-width: 1279px) {
+  .hero-floating-card {
+    z-index: 20;
+    max-width: 190px;
+    padding: 9px;
+    border-radius: 13px;
+  }
+
+  .hero-floating-left {
+    left: 8px;
+    bottom: 72px;
+  }
+
+  .hero-floating-right {
+    right: 8px;
+    top: 27%;
+  }
+
+  .hero-floating-card .text-xs {
+    font-size: 8px;
+  }
+
+  .hud-stat {
+    min-height: 49px;
+    padding: 7px 8px;
+  }
+
+  .hud-stat span {
+    font-size: 6px;
+  }
+
+  .hud-stat strong {
+    font-size: 7px;
+  }
+}
+
+/* =========================================================
+   DESKTOP MÉDIO — PROJECÇÃO CONTROLADA
+   ========================================================= */
+
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .hero-floating-card {
+    z-index: 20;
+    max-width: 205px;
+  }
+
+  .hero-floating-left {
+    left: -10px;
+    bottom: 82px;
+  }
+
+  .hero-floating-right {
+    right: -10px;
+    top: 29%;
+  }
+}
+
+/* =========================================================
+   DESKTOP GRANDE — EFEITO FLUTUANTE COMPLETO
+   ========================================================= */
+
+@media (min-width: 1440px) {
+  .hero-floating-left {
+    left: -35px;
+    bottom: 90px;
+  }
+
+  .hero-floating-right {
+    right: -30px;
+    top: 30%;
+  }
+}
+
+/* =========================================================
    MOBILE
    ========================================================= */
 
@@ -1206,13 +1525,14 @@ img {
 
   .sicsi-home > section:first-of-type {
     min-height: auto;
-    padding-top: 125px;
+    padding-top: 130px;
     padding-bottom: 75px;
   }
 
   /*
-   * MOBILE:
-   * A caixa fica centrada e mais próxima do "Aprenda a...".
+   * CORREÃ‡ÃƒO:
+   * "PLATAFORMA DE CONSCIENCIALIZAÃ‡ÃƒO" fica
+   * verdadeiramente centralizada no mobile.
    */
   .hero-status {
     display: flex;
@@ -1225,12 +1545,16 @@ img {
     font-size: 7px;
     letter-spacing: 0.13em;
     text-align: center;
+
+    /* Aproxima a plataforma da navbar sem alterar
+       o espaçamento estrutural do restante do hero. */
+    transform: translateY(-10px);
   }
 
   .hero-title {
     width: 100%;
     max-width: 100%;
-    margin-top: 17px;
+    margin-top: 22px;
     font-size: clamp(3rem, 15vw, 4.8rem);
     line-height: 0.88;
     letter-spacing: -0.065em;
@@ -1420,6 +1744,11 @@ img {
     max-width: 100%;
   }
 
+  /*
+   * FOOTER MOBILE:
+   * Estrutura vertical deliberada.
+   * Nada fica comprimido ou desalinhado.
+   */
   .footer-main {
     display: flex;
     width: 100%;
@@ -1484,6 +1813,43 @@ img {
     margin-left: 0;
     font-size: 16px;
   }
+
+  .security-loader-logo {
+    width: 88px;
+    height: 88px;
+  }
+
+  .security-loader-logo svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .security-loader-orbit-one {
+    inset: -12px;
+  }
+
+  .security-loader-orbit-two {
+    inset: -23px;
+  }
+
+  .security-loader-orbit-three {
+    inset: -34px;
+  }
+
+  .security-loader-brand {
+    margin-top: 24px;
+    font-size: 16px;
+  }
+
+  .security-loader-status {
+    max-width: 250px;
+    font-size: 7px;
+    text-align: center;
+  }
+
+  .security-loader-progress {
+    width: 125px;
+  }
 }
 
 /* =========================================================
@@ -1510,11 +1876,133 @@ img {
   .logo-ring-two,
   .radar-line,
   .security-orbit,
-  .cyber-scan-line {
+  .cyber-scan-line,
+  .security-loader-content,
+  .security-loader-orbit-one,
+  .security-loader-orbit-two,
+  .security-loader-orbit-three,
+  .security-loader-scan,
+  .security-loader-status span,
+  .security-loader-progress div {
     animation: none !important;
+  }
+
+  .security-loader-content {
+    opacity: 1;
+    transform: none;
   }
 
   .premium-spotlight::before {
     display: none;
+  }
+}
+/* =========================================================
+   SICSI — CONTENÇÃO DEFINITIVA DOS CARTÕES FLUTUANTES
+   Os cartões nunca ocupam a zona do cartão
+   "Estado de consciência".
+   ========================================================= */
+
+.hero-visual {
+  isolation: isolate;
+}
+
+.hero-state-card {
+  z-index: 50 !important;
+}
+
+.hero-floating-card {
+  z-index: 15 !important;
+  pointer-events: none;
+}
+
+.hero-floating-left,
+.hero-floating-right {
+  bottom: auto !important;
+}
+
+/* Desktop e monitores: os dois cartões permanecem na metade
+   superior do visual, completamente afastados do estado. */
+@media (min-width: 1025px) {
+  .hero-floating-left {
+    left: clamp(-8px, -0.4vw, 6px) !important;
+    top: 18% !important;
+    bottom: auto !important;
+  }
+
+  .hero-floating-right {
+    right: clamp(-8px, -0.4vw, 6px) !important;
+    top: 42% !important;
+    bottom: auto !important;
+  }
+
+  .hero-state-card {
+    position: absolute;
+    inset-inline: 20px;
+    bottom: 20px;
+  }
+}
+
+/* Tablet: maior contenção lateral e vertical. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hero-floating-left {
+    left: 6px !important;
+    top: 18% !important;
+    bottom: auto !important;
+  }
+
+  .hero-floating-right {
+    right: 6px !important;
+    top: 42% !important;
+    bottom: auto !important;
+  }
+
+  .hero-state-card {
+    position: absolute;
+    inset-inline: 20px;
+    bottom: 20px;
+  }
+}
+
+/* Mobile: os cartões ficam em zonas independentes do cartão
+   de estado e nunca podem atravessar a sua área. */
+@media (max-width: 767px) {
+  .hero-floating-left {
+    left: 8px !important;
+    top: 40% !important;
+    bottom: auto !important;
+  }
+
+  .hero-floating-right {
+    right: 8px !important;
+    top: 20% !important;
+    bottom: auto !important;
+  }
+
+  .hero-state-card {
+    position: absolute;
+    inset-inline: 20px;
+    bottom: 20px;
+    z-index: 50 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-status {
+    transform: translateY(-8px);
+  }
+
+  .hero-floating-left {
+    left: 3px !important;
+    top: 38% !important;
+  }
+
+  .hero-floating-right {
+    right: 3px !important;
+    top: 18% !important;
+  }
+
+  .hero-state-card {
+    inset-inline: 12px;
+    bottom: 12px;
   }
 }

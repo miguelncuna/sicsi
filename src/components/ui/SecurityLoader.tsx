@@ -1,100 +1,378 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
-export default function SecurityLoader() {
+interface SecurityLoaderProps {
+  /**
+   * Mantido por compatibilidade com o layout actual.
+   * false desactiva completamente o loader.
+   * true/undefined activa o comportamento automático.
+   */
+  visible?: boolean;
+  label?: string;
+}
+
+const TEMPO_MINIMO_VISIVEL = 650;
+const TEMPO_INICIAL = 900;
+const LIMITE_SEGURANCA = 8000;
+const TEMPO_LINK_EXTERNO = 1200;
+
+export default function SecurityLoader({
+  visible = true,
+  label = "A proteger a sua ligação",
+}: SecurityLoaderProps) {
   const pathname = usePathname();
 
-  const [visible, setVisible] = useState(true);
-  const [leaving, setLeaving] = useState(false);
+  const [ativo, setAtivo] = useState(Boolean(visible));
 
+  const primeiraRota = useRef(true);
+  const momentoExibicao = useRef<number>(Date.now());
+
+  const esconderTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const limiteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const limparTimers = () => {
+    if (esconderTimer.current) {
+      clearTimeout(esconderTimer.current);
+      esconderTimer.current = null;
+    }
+
+    if (limiteTimer.current) {
+      clearTimeout(limiteTimer.current);
+      limiteTimer.current = null;
+    }
+  };
+
+  const esconder = (atraso = 0) => {
+    if (esconderTimer.current) {
+      clearTimeout(esconderTimer.current);
+      esconderTimer.current = null;
+    }
+
+    esconderTimer.current = setTimeout(() => {
+      setAtivo(false);
+      esconderTimer.current = null;
+    }, Math.max(0, atraso));
+  };
+
+  const mostrar = (tempoMaximo = LIMITE_SEGURANCA) => {
+    if (!visible) {
+      return;
+    }
+
+    limparTimers();
+
+    momentoExibicao.current = Date.now();
+
+    setAtivo(true);
+
+    limiteTimer.current = setTimeout(() => {
+      setAtivo(false);
+      limiteTimer.current = null;
+    }, tempoMaximo);
+  };
+
+  const esconderRespeitandoTempoMinimo = () => {
+    const decorrido =
+      Date.now() - momentoExibicao.current;
+
+    const restante = Math.max(
+      0,
+      TEMPO_MINIMO_VISIVEL - decorrido
+    );
+
+    esconder(restante);
+  };
+
+  /*
+   * ============================================================
+   * PRIMEIRA ABERTURA
+   * ============================================================
+   *
+   * O loader aparece durante a inicialização.
+   * Nunca permanece permanentemente no ecrã.
+   */
   useEffect(() => {
-    setVisible(true);
-    setLeaving(false);
+    if (!visible) {
+      limparTimers();
+      setAtivo(false);
+      return;
+    }
 
-    const exitTimer = window.setTimeout(() => {
-      setLeaving(true);
+    mostrar(TEMPO_INICIAL + 1000);
 
-      const hideTimer = window.setTimeout(() => {
-        setVisible(false);
-      }, 450);
+    esconder(TEMPO_INICIAL);
 
-      return () => window.clearTimeout(hideTimer);
-    }, 900);
+    return limparTimers;
 
-    return () => window.clearTimeout(exitTimer);
-  }, [pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
+  /*
+   * ============================================================
+   * NAVEGAÇÃO DO NEXT.JS
+   * ============================================================
+   *
+   * Sempre que a rota muda:
+   *
+   * 1. mostra o loader;
+   * 2. aguarda a nova página;
+   * 3. desaparece suavemente;
+   * 4. possui limite máximo de segurança.
+   */
   useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement | null;
+    if (!visible) {
+      return;
+    }
 
-      if (!target) return;
+    if (primeiraRota.current) {
+      primeiraRota.current = false;
+      return;
+    }
 
-      const link = target.closest("a");
+    mostrar(LIMITE_SEGURANCA);
 
-      if (!link) return;
+    esconderRespeitandoTempoMinimo();
 
-      const href = link.getAttribute("href");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, visible]);
 
-      if (!href) return;
+  /*
+   * ============================================================
+   * CLIQUES DE NAVEGAÇÃO
+   * ============================================================
+   *
+   * Detecta:
+   *
+   * - <Link>
+   * - <a>
+   * - formulários
+   * - botões submit
+   * - botões explicitamente marcados
+   *
+   * Não interfere com:
+   *
+   * - menus
+   * - dropdowns
+   * - modais
+   * - tabs
+   * - botões puramente visuais
+   */
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    const tratarClique = (evento: MouseEvent) => {
+      if (evento.defaultPrevented) {
+        return;
+      }
+
+      if (evento.button !== 0) {
+        return;
+      }
 
       if (
-        href.startsWith("#") ||
-        href.startsWith("mailto:") ||
-        href.startsWith("tel:") ||
-        href.startsWith("javascript:")
+        evento.metaKey ||
+        evento.ctrlKey ||
+        evento.shiftKey ||
+        evento.altKey
       ) {
         return;
       }
 
-      if (link.target === "_blank") return;
+      const alvo =
+        evento.target as HTMLElement | null;
 
-      if (link.hasAttribute("download")) return;
+      const elemento = alvo?.closest(
+        "a, button"
+      ) as
+        | HTMLAnchorElement
+        | HTMLButtonElement
+        | null;
 
-      const destination = new URL(
-        href,
-        window.location.href,
-      );
-
-      const current = new URL(window.location.href);
-
-      if (
-        destination.origin === current.origin &&
-        destination.pathname === current.pathname &&
-        destination.search === current.search
-      ) {
+      if (!elemento) {
         return;
       }
 
-      setVisible(true);
-      setLeaving(false);
+      /*
+       * ========================================================
+       * LINKS
+       * ========================================================
+       */
+      if (elemento instanceof HTMLAnchorElement) {
+        if (elemento.hasAttribute("download")) {
+          return;
+        }
+
+        if (elemento.target === "_blank") {
+          return;
+        }
+
+        const href =
+          elemento.getAttribute("href");
+
+        if (!href) {
+          return;
+        }
+
+        /*
+         * Âncoras internas não precisam de loader de página.
+         */
+        if (href.startsWith("#")) {
+          return;
+        }
+
+        /*
+         * Protocolos que não representam navegação
+         * normal da aplicação.
+         */
+        if (
+          href.startsWith("mailto:") ||
+          href.startsWith("tel:") ||
+          href.startsWith("javascript:")
+        ) {
+          return;
+        }
+
+        const url = new URL(
+          href,
+          window.location.href
+        );
+
+        const mesmaOrigem =
+          url.origin === window.location.origin;
+
+        mostrar(
+          mesmaOrigem
+            ? LIMITE_SEGURANCA
+            : TEMPO_LINK_EXTERNO
+        );
+
+        return;
+      }
+
+      /*
+       * ========================================================
+       * BOTÕES
+       * ========================================================
+       */
+
+      const tipo =
+        elemento
+          .getAttribute("type")
+          ?.toLowerCase();
+
+      const explicitamenteAtivo =
+        elemento.getAttribute(
+          "data-sicsi-loading"
+        ) === "true";
+
+      if (
+        tipo === "submit" ||
+        explicitamenteAtivo
+      ) {
+        mostrar(LIMITE_SEGURANCA);
+      }
     };
 
-    document.addEventListener("click", handleClick);
+    /*
+     * Qualquer formulário submetido activa o processamento.
+     */
+    const tratarSubmit = () => {
+      mostrar(LIMITE_SEGURANCA);
+    };
+
+    document.addEventListener(
+      "click",
+      tratarClique,
+      true
+    );
+
+    document.addEventListener(
+      "submit",
+      tratarSubmit,
+      true
+    );
 
     return () => {
-      document.removeEventListener("click", handleClick);
+      document.removeEventListener(
+        "click",
+        tratarClique,
+        true
+      );
+
+      document.removeEventListener(
+        "submit",
+        tratarSubmit,
+        true
+      );
+    };
+  }, [visible]);
+
+  /*
+   * ============================================================
+   * NAVEGAÇÃO COMPLETA / RELOAD
+   * ============================================================
+   */
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    const tratarAntesDeSair = () => {
+      mostrar(LIMITE_SEGURANCA);
+    };
+
+    window.addEventListener(
+      "beforeunload",
+      tratarAntesDeSair
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beforeunload",
+        tratarAntesDeSair
+      );
+    };
+  }, [visible]);
+
+  /*
+   * ============================================================
+   * LIMPEZA FINAL
+   * ============================================================
+   */
+  useEffect(() => {
+    return () => {
+      limparTimers();
     };
   }, []);
 
-  if (!visible) return null;
+  /*
+   * Nunca renderizar quando estiver desligado.
+   */
+  if (!visible || !ativo) {
+    return null;
+  }
 
   return (
     <div
-      className={`security-loader ${
-        leaving ? "security-loader-leaving" : ""
-      }`}
+      className="security-loader"
+      role="status"
       aria-live="polite"
-      aria-label="A carregar o SICSI"
+      aria-label={label}
     >
-      <div className="security-loader-background" />
+      <div
+        className="security-loader-background"
+        aria-hidden="true"
+      />
 
       <div className="security-loader-content">
-
-        <div className="security-loader-logo">
-
+        <div
+          className="security-loader-logo"
+          aria-hidden="true"
+        >
           <div className="security-loader-orbit security-loader-orbit-one" />
 
           <div className="security-loader-orbit security-loader-orbit-two" />
@@ -105,25 +383,24 @@ export default function SecurityLoader() {
 
           <svg
             viewBox="0 0 48 48"
-            className="relative z-20 size-11 text-cyan-300"
+            className="size-10 text-cyan-300"
             fill="none"
-            aria-hidden="true"
           >
             <path
-              d="M24 4 41 10v11.2C41 32.2 34.2 39.7 24 44 13.8 39.7 7 32.2 7 21.2V10l17-6Z"
+              d="M24 4.5 40 10v11.2c0 10.3-6.4 17.4-16 22.3-9.6-4.9-16-12-16-22.3V10l16-5.5Z"
               stroke="currentColor"
               strokeWidth="1.8"
+              strokeLinejoin="round"
             />
 
             <path
-              d="m15.5 24 5.2 5.2L33 17"
+              d="m15.5 24 5.3 5.3L33 17"
               stroke="currentColor"
-              strokeWidth="2.4"
+              strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
-
         </div>
 
         <div className="security-loader-brand">
@@ -131,18 +408,21 @@ export default function SecurityLoader() {
         </div>
 
         <div className="security-loader-status">
-          <span />
-          A proteger a tua experiência
+          <span aria-hidden="true" />
+
+          <span className="sr-only">
+            Estado:
+          </span>
+
+          {label}
         </div>
 
-        <div className="security-loader-progress">
+        <div
+          className="security-loader-progress"
+          aria-hidden="true"
+        >
           <div />
         </div>
-
-        <div className="security-loader-code">
-          SECURE://SICSI
-        </div>
-
       </div>
     </div>
   );
